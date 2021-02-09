@@ -7,4 +7,4 @@ render.js is modified from a course template provided by Tampere University staf
 
 ## View
 
-See the project in action at [Heroku](ADD)
+See the project in action at [Heroku](https://vincitproject.herokuapp.com/)
