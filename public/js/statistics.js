@@ -22,18 +22,21 @@ const getDateAsString = (date) => {
 /**
  * Adds the results into view by appending the parameters into a template.
  * 
- * @param {int} days - The longest bullish trend in days
- * @param {String} start - Start date of the search
- * @param {String} end - End date of the search
+ * @param {object} list - Stores the longest bullish trend in days and its dates.
  */
-const resultA = (days, start, end) => {
-    const cloneDate = document.querySelector("#answer-date").content.cloneNode(true);
+const resultA = (list) => {
     const cloneA = document.querySelector("#answer-A").content.cloneNode(true);
 
-    cloneDate.querySelector("h5").textContent += `${start} and ${end}`;
-    cloneA.querySelector("p").innerHTML += `<b>${days}</b>`;
+    cloneA.querySelector("#days").innerHTML += `<b>${list.max}</b>`;
 
-    document.querySelector("#answers").appendChild(cloneDate);
+    const dates = cloneA.querySelector("#dates");
+    for (let i = 0; i < list.dates.length; ++i) {
+        const date = getDateAsString(list.dates[i]);
+        if (i === list.dates.length - 1) dates.innerHTML += `${date}.`;
+        else if (i === list.dates.length - 2) dates.innerHTML += `${date} and `;
+        else dates.innerHTML += `${date}, `;
+    }
+
     document.querySelector("#answers").appendChild(cloneA);
 }
 
@@ -91,6 +94,7 @@ const handleForm = (e, quotes) => {
     document.querySelector("#answers").innerHTML = "";
     document.querySelector("#error-checkbox").removeAttribute('data-show');
     document.querySelector("#error-date").removeAttribute('data-show');
+    document.querySelector("#error-sma5").removeAttribute('data-show');
 
     // show an error if end date is not before the start time
     if (start > end) {
@@ -119,7 +123,12 @@ const handleForm = (e, quotes) => {
     if (form.elements["C"].checked) {
         // add the last 5 days entries to the array
         // so SMA 5 can be calculated on the start day
-        const index = quotes.findIndex(obj => obj.date === filteredQuotes[0].date);
+        const index = quotes.findIndex(obj => obj.date === filteredQuotes[0].date)
+        // show error if 5 last days are inavailable
+        if (index < 5) {
+            document.querySelector("#error-sma5").setAttribute('data-show', '');
+            return;
+        }
         for (let i = index - 1; i >= index - 5 ; --i) {
             filteredQuotes.unshift(quotes[i]);
         }
@@ -160,6 +169,11 @@ const handleForm = (e, quotes) => {
         }))
         .sort((a, b) => a.date - b.date);
     
+    const earliest = getDateAsString(mappedQuotes[5].date);
+    // add to SMA 5 error message
+    document.querySelector("#error-sma5>p").innerHTML +=
+        `Earliest available start date is ${earliest}.`;
+
     // event listeners
     document.querySelector("#submit")
         .addEventListener("click", (e) => handleForm(e, mappedQuotes));

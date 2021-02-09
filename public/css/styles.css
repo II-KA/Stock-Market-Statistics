@@ -49,10 +49,12 @@ form>div {
     display: none;
 }
   
-#error-date[data-show], #error-date[data-show]>p {
+#error-date[data-show], #error-checkbox[data-show], 
+#error-sma5[data-show], #error-date[data-show]>p, 
+#error-checkbox[data-show]>p, #error-sma5[data-show]>p {
     display: block;
 }
 
-#error-checkbox[data-show], #error-checkbox[data-show]>p {
-    display: block;
+#days, #dates {
+    margin-bottom: 0;
 }

@@ -1,24 +1,31 @@
 /**
  * Calculates the longest bullish trend within given data.
+ * Also gives the start and end date of the longst bullish trend.
  * 
  * @param {Array<object>} data - Historical stock data
- * @returns {Array<object>}
+ * @returns {object} - Objects, which stores the longest
+ * bullish trend in days and its dates.
  */
 const calculateA = (data) => {
-    let maxTrend = 0;
+    list = { max: 0, dates: [] };
     let i = 0;
 
     while (i < data.length) {
-        let currTrend = 1;
+        currDates = [ data[i].date ];
+        let curr = 1;
         for (let j = i + 1; j < data.length; ++j) {
             if (data[j].close <= data[j - 1].close) break;
-            ++currTrend;
+            currDates.push(data[j].date)
+            ++curr;
         }
-        if (currTrend > maxTrend) maxTrend = currTrend;
-        // skip through dates that were included in the bullish trend
-        i += currTrend;
+        if (curr > list.max) {
+            list.max = curr;
+            list.dates = currDates;
+        }
+        // skip through dates that were included in the trend
+        i += curr;
     }
-    return maxTrend;
+    return list;
 }
 
 /**
@@ -64,7 +71,7 @@ const calculateC = (data) => {
         const percentage = ((data[i].open - sma5) / sma5) * 100;
         list.push({ "date": data[i].date, "percentage": percentage });
     }
-    // sort in ascending order by the percentage
-    list.sort((a, b) => a.percentage - b.percentage);
+    // sort in descending order by the percentage
+    list.sort((a, b) => b.percentage - a.percentage);
     return list;
 }
